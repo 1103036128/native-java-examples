@@ -69,3 +69,7 @@ To run your existing tests in a native image, run the following goal:
 $ ./mvnw test -PnativeTest
 ```
 
+```shell
+docker run -it --rm  --network=host -v /g/Code/native-java-examples/spring-boot:/opt/app -v /f/docker/maven/.m2/:/root/.m2/ -v /f/docker/maven/install:/opt/maven/install graalvm17-build:v3 /bin/bash
+mvn -Pnative native:compile
+```

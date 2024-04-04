@@ -1,0 +1,32 @@
+# 基础镜像为CentOS x86_64系统
+FROM centos:latest
+
+# 设置环境变量
+ENV GRAALVM_HOME=/opt/graalvm
+ENV MAVEN_HOME=/opt/maven
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+
+# 安装必要的工具和依赖项
+RUN yum install -y tar gzip
+
+# 将 GraalVM 安装包复制到容器中并解压
+COPY graalvm-jdk-22_linux-x64_bin.tar.gz /tmp/
+RUN mkdir -p $GRAALVM_HOME \
+    && tar -xzf /tmp/graalvm-jdk-22_linux-x64_bin.tar.gz -C $GRAALVM_HOME --strip-components=1 \
+    && rm /tmp/graalvm-jdk-22_linux-x64_bin.tar.gz
+
+# 配置环境变量
+ENV PATH="$GRAALVM_HOME/bin:$PATH"
+
+# 将 Maven 安装包复制到容器中并解压
+COPY apache-maven-3.9.6-bin.tar.gz /tmp/
+RUN mkdir -p $MAVEN_HOME \
+    && tar -xzf /tmp/apache-maven-3.9.6-bin.tar.gz -C $MAVEN_HOME --strip-components=1 \
+    && rm /tmp/apache-maven-3.9.6-bin.tar.gz
+
+# 配置环境变量
+ENV PATH="$MAVEN_HOME/bin:$PATH"
+
+CMD ["echo", "Docker container is running..."]
+CMD ["java", "-version"]
