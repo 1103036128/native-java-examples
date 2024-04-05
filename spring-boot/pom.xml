@@ -35,6 +35,51 @@
 
     <build>
         <plugins>
+            <!-- 插件使用链接 https://graalvm.github.io/native-build-tools/latest/maven-plugin.html -->
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+<!--                <version>${native.maven.plugin.version}</version>-->
+                <configuration>
+                    <jvmArgs>
+                        <arg>-Xmx200m</arg>
+<!--                        <arg>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8000</arg>-->
+                    </jvmArgs>
+                    <skip>false</skip>
+                    <!-- 使用参数文件进行原生映像构建 -->
+                    <useArgFile>false</useArgFile>
+                    <!-- 指定镜像名称 如果未提供自定义映像名称，则默认使用项目的工件 ID。-->
+                    <imageName>${project.artifactId}</imageName>
+                    <!-- 指定主类 -->
+<!--                    <mainClass>${start-class}</mainClass>-->
+                    <!-- 其他参数传递给本机映像生成器 -->
+                    <buildArgs>
+                        --no-fallback
+                        -H:-CheckToolchain
+                    </buildArgs>
+                    <!-- GraalVM 可达性元数据支持 -->
+                    <!-- https://github.com/oracle/graalvm-reachability-metadata -->
+                    <metadataRepository>
+                        <enabled>true</enabled>
+                    </metadataRepository>
+                    <agent>
+                        <enabled>true</enabled>
+                    </agent>
+                    <!--使用快速构建模式构建映像 -->
+                                         <quickBuild>true</quickBuild>
+                </configuration>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <goals>
+                            <!-- “native：build”目标已弃用。请改用 'native：compile-no-fork'。 -->
+                            <goal>compile-no-fork</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

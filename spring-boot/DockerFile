@@ -9,7 +9,8 @@ RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|
 
 # 安装必要的工具和依赖项
 RUN yum install -y tar gzip
-
+RUN yum install -y net-tools
+RUN yum install -y gcc glibc-devel zlib-devel
 # 将 GraalVM 安装包复制到容器中并解压
 COPY graalvm-jdk-22_linux-x64_bin.tar.gz /tmp/
 RUN mkdir -p $GRAALVM_HOME \
@@ -18,7 +19,7 @@ RUN mkdir -p $GRAALVM_HOME \
 
 # 配置环境变量
 ENV PATH="$GRAALVM_HOME/bin:$PATH"
-
+ENV CLASSPATH=".:$GRAALVM_HOME/lib"
 # 将 Maven 安装包复制到容器中并解压
 COPY apache-maven-3.9.6-bin.tar.gz /tmp/
 RUN mkdir -p $MAVEN_HOME \
